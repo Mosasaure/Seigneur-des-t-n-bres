@@ -1,0 +1,145 @@
+import discord as d
+from discord.ext import commands
+import time
+
+bot = commands.Bot(command_prefix = ">", description = "Bot de test", intents = d.Intents.all())
+
+@bot.event
+async def on_ready():
+    print(f"Logged on as {bot.user}")
+
+# commandes du bot
+
+@bot.command()
+async def ping(ctx):
+    await ctx.send(f"Le bot a une latence de {round(bot.latency * 1000)} ms")
+
+@bot.command()
+async def amogus(ctx):
+    await ctx.send("https://tenor.com/view/amogus-among-us-gif-21300627")
+    await ctx.message.delete()
+
+# donne des infos sur le bot
+
+@bot.command()
+async def info(ctx):
+    embed_info = d.Embed(
+    title = "Info du bot", 
+    color = 0xFF0000
+    )
+    embed_info.set_author(
+    name = ctx.author.name,
+    icon_url = ctx.author.avatar
+    )
+
+    await ctx.send(embed = embed_info)
+
+@bot.command()
+async def commandes(ctx):
+    embed = d.Embed(
+        title = "Nom des commandes",
+        color = 0xFF0000
+    )
+    embed.set_author(
+        name = ctx.author.name,
+        icon_url = ctx.author.avatar
+    )
+    embed.add_field(name = "Ping", value = "Envoie la latence du bot en millisecondes", inline = False)
+    embed.add_field(name = "Commandes", value = "Donne le nom des différentes commandes sur le serveur et quelque information dessus", inline = False)
+    embed.add_field(name = "Info", value = "Donne des informations sur le bot telles que son but, pourquoi sa création, etc...", inline = False)
+    embed.set_footer(text = "L'équipe du STAFF")
+
+    await ctx.send(embed = embed)
+
+@bot.command()
+async def embed(ctx):
+    embed = d.Embed(
+        title = "Titre", 
+        description = "Ceci est une déscription qualitative", 
+        color = 0xFF0000
+    )
+    embed.set_author(
+        name = "Name", 
+        icon_url = 'https://cdn.discordapp.com/avatars/754322712922423378/8f803f54b6ac0316b9c2bb7ba3950110.png?size=4096'
+    )
+    embed.set_footer(text = "Je suis le footer de l'embed")
+
+    await ctx.send(embed = embed)
+
+# kick une personne
+
+@bot.command()
+@commands.has_permissions(kick_members = True)
+async def kick(ctx, user : d.Member, *, reason = "Aucune raison n'a été spécifiée"):
+    reason = "".join(reason)
+
+    em = d.Embed(
+    title = "Expulsion",
+    description = f"{user.mention} a été **expulsé** par {ctx.author} !\nRaison : *{reason}*",
+    color = 0xFF0000
+    )
+    em.set_thumbnail(url = user.avatar)
+
+    await ctx.guild.kick(user, reason = reason)
+    
+    await ctx.send(embed = em)
+
+    # await ctx.send(f"{user.mention} a été **expulsé** par {ctx.author} !\nRaison : {reason}")
+
+@bot.command()
+async def clear(ctx, nb : int):
+    messages = ctx.channel.history(limit = nb + 1)
+    for message in messages:
+        await message.delete()
+
+# test d'un embed complet
+
+@bot.command()
+async def testEmbed(ctx):
+    file = d.File("IconHelpOutline.png", filename="image.png")
+    embed = d.Embed(
+        title = "Title",
+        description = "Une description",
+        color = 0xFF0000,
+        url = ""
+    )
+    embed.set_author(
+        name = ctx.author.name,
+        icon_url = ctx.author.avatar
+    )
+    embed.set_thumbnail(url = "attachment://image.png")
+    embed.set_image(url = "attachment://image.png")
+    embed.add_field(
+        name = "Nom du field 1",
+        value = "Value du field 1",
+        inline = True
+    )
+    embed.add_field(
+        name = "Nom du field 2",
+        value = "Value du field 2",
+        inline = True
+    )
+    embed.add_field(
+        name = "Nom du field 3",
+        value = "Value du field 3",
+        inline = False
+    )
+    embed.add_field(
+        name = "Nom du field 4",
+        value = "Value du field 4",
+        inline = False
+    )
+    embed.set_footer(text = "C'est une footer")
+
+    await ctx.send(embed = embed, file = file)
+
+# message d'ecoute et d'envoie du bot
+
+@bot.listen()
+async def on_message(message):
+    if message.content.lower() == "feur":
+        await message.channel.send("Comment j'aurais pas aimé （⊙ ｏ⊙）")
+    if message.content.lower() == "ping":
+        await message.channel.send("Pong !")
+
+bot.run("MTMzODI2ODM2MTY3MDUyNTA5MQ.GBIUAm.ApZgCZujNB0vAY6viXs325W4J52zT_bUcWZeaQ")
